@@ -1,0 +1,51 @@
+# Dependency directories
+node_modules/
+frontend/node_modules/
+functions/node_modules/
+
+# Build output
+frontend/dist/
+functions/lib/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+firestore-debug.log
+ui-debug.log
+pubsub-debug.log
+
+# Environment secrets — NEVER commit these
+.env
+.env.local
+.env.production
+.env.*.local
+functions/.env
+functions/.env.local
+functions/.env.production
+
+# Service account keys — NEVER commit these
+*.serviceAccount.json
+*-firebase-adminsdk-*.json
+service-account.json
+serviceAccountKey.json
+
+# Google Cloud credentials
+application_default_credentials.json
+
+# IDE
+.idea/
+.vscode/settings.json
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# TypeScript
+*.tsbuildinfo

@@ -1,0 +1,521 @@
+/* =========================================================
+   Personal Gemini Journal — Design System
+   Liquid Glass Material Language
+   ========================================================= */
+
+/* ─────────────────────────────────────────────────────────
+   Fonts — DM Serif Display for headings (editorial, analog feel)
+            DM Sans for body (clean, legible at small sizes)
+   Both from Google Fonts. Zero tech / zero AI aesthetic.
+───────────────────────────────────────────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300..600;1,9..40,300..400&display=swap");
+
+@import "tailwindcss";
+
+/* ── Layer order ── */
+@layer reset, base, theme, glass, components, utilities;
+
+/* ─────────────────────────────────────────────────────────
+   RESET
+───────────────────────────────────────────────────────── */
+@layer reset {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   THEME — Design Tokens
+───────────────────────────────────────────────────────── */
+@layer theme {
+  :root {
+    /* Typography — editorial serif for headings, DM Sans for body */
+    --font-sans:  "DM Sans",  ui-sans-serif,  system-ui, -apple-system, sans-serif;
+    --font-serif: "DM Serif Display", Georgia, "Times New Roman", serif;
+
+    /* Type scale */
+    --text-xs:   0.75rem;   /* 12px */
+    --text-sm:   0.875rem;  /* 14px */
+    --text-base: 1rem;      /* 16px */
+    --text-lg:   1.125rem;  /* 18px */
+    --text-xl:   1.5rem;    /* 24px */
+    --text-2xl:  2rem;      /* 32px */
+
+    /* Line heights */
+    --leading-tight:  1.25;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.7;
+
+    /* Spacing scale */
+    --space-1:  0.25rem;
+    --space-2:  0.5rem;
+    --space-3:  0.75rem;
+    --space-4:  1rem;
+    --space-5:  1.25rem;
+    --space-6:  1.5rem;
+    --space-8:  2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+    --space-16: 4rem;
+
+    /* Border radii — squircle-like generous radii */
+    --radius-sm:  10px;
+    --radius-md:  16px;
+    --radius-lg:  24px;
+    --radius-xl:  32px;
+    --radius-full: 9999px;
+
+    /* ── Accent — Warm Tan (#C8A882, hsl 30 38% 65%) ──
+       Sourced from Vintage Bullet Journal palette (search result 2).
+       The warm mid-tan, used for CTA buttons, active states, caret.
+       Everything else is deep chocolate and near-black. */
+    --accent-hue: 30;
+    --accent:        hsl(30, 38%, 58%);
+    --accent-dim:    hsl(30, 34%, 46%);
+    --accent-glow:   hsl(30, 38%, 58%, 0.20);
+    --accent-subtle: hsl(30, 32%, 58%, 0.12);
+
+    /* Motion tokens */
+    --ease-spring:  cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-bounce:  cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
+    --duration-fast: 150ms;
+    --duration-base: 220ms;
+    --duration-slow: 320ms;
+
+    /* Glass material blur */
+    --blur-glass:  blur(32px) saturate(1.8);
+    --blur-clear:  blur(16px) saturate(1.5);
+    --blur-backdrop: blur(40px);
+
+    /* Z-index layers */
+    --z-base:    0;
+    --z-elevated: 10;
+    --z-overlay: 100;
+    --z-modal:   200;
+    --z-toast:   300;
+  }
+
+
+  /* ── Dark mode (default) ── */
+  :root, [data-theme="dark"] {
+    color-scheme: dark;
+
+    /* Vintage Bullet Journal palette (from search result 2):
+       Near-black    #1C1410  hsl(25, 25%,  9%)  → bg-base
+       Deep choc     #4A3728  hsl(25, 28%, 23%)  → bg-surface / cards
+       Warm brown    #8B6A52  hsl(25, 26%, 43%)  → mid-tones, mesh-2
+       Tan           #C8A882  hsl(30, 38%, 65%)  → accent
+       Beige         #D8C4A8  hsl(33, 33%, 75%)  → primary text
+       Olive-taupe   #6E6252  hsl(28, 14%, 38%)  → mesh-3            */
+
+    --bg-base:    hsl(25, 26%, 8%);
+    --bg-surface: hsl(25, 24%, 11%);
+
+    /* Glass — warm parchment-tinted, not cold white */
+    --glass-bg:         rgba(216, 196, 168, 0.055);
+    --glass-bg-hover:   rgba(216, 196, 168, 0.085);
+    --glass-bg-active:  rgba(216, 196, 168, 0.115);
+    --glass-border:     rgba(200, 168, 130, 0.11);
+    --glass-border-bright: rgba(200, 168, 130, 0.20);
+    --glass-highlight:  rgba(230, 210, 185, 0.07);
+    --glass-shadow:     0 8px 48px rgba(0, 0, 0, 0.60), 0 2px 8px rgba(0, 0, 0, 0.40);
+    --glass-shadow-sm:  0 4px 24px rgba(0, 0, 0, 0.45);
+
+    --clear-bg:         rgba(216, 196, 168, 0.038);
+    --clear-border:     rgba(200, 168, 130, 0.075);
+
+    /* Text — beige → warm cream → muted taupe */
+    --text-primary:   hsl(33, 28%, 83%);
+    --text-secondary: hsl(28, 18%, 58%);
+    --text-muted:     hsl(25, 14%, 40%);
+    --text-on-accent: hsl(25, 30%, 10%);
+
+    /* Message bubbles */
+    --bubble-user-bg:  rgba(200, 168, 130, 0.13);
+    --bubble-model-bg: rgba(216, 196, 168, 0.042);
+
+    /* Gradient mesh — deep chocolate, warm brown, olive, near-black */
+    --mesh-1: hsl(25, 30%, 14%);
+    --mesh-2: hsl(25, 26%, 19%);
+    --mesh-3: hsl(28, 16%, 16%);
+    --mesh-4: hsl(20, 28%, 11%);
+
+    /* Sentiment */
+    --sentiment-positive: hsl(138, 42%, 52%);
+    --sentiment-neutral:  hsl(33,  32%, 62%);
+    --sentiment-negative: hsl(12,  58%, 54%);
+
+    /* Danger */
+    --danger: hsl(12, 62%, 54%);
+    --danger-subtle: hsl(12, 62%, 54%, 0.13);
+  }
+
+  /* ── Light mode ── */
+  [data-theme="light"] {
+    color-scheme: light;
+
+    /* Light mode uses parchment / aged paper tones */
+    --bg-base:    hsl(35, 28%, 90%);
+    --bg-surface: hsl(38, 24%, 95%);
+
+    --glass-bg:         rgba(245, 235, 220, 0.68);
+    --glass-bg-hover:   rgba(245, 235, 220, 0.82);
+    --glass-bg-active:  rgba(245, 235, 220, 0.92);
+    --glass-border:     rgba(110, 82, 62, 0.11);
+    --glass-border-bright: rgba(110, 82, 62, 0.20);
+    --glass-highlight:  rgba(255, 250, 240, 0.75);
+    --glass-shadow:     0 8px 48px rgba(40, 28, 18, 0.13), 0 2px 8px rgba(40, 28, 18, 0.07);
+    --glass-shadow-sm:  0 4px 24px rgba(40, 28, 18, 0.09);
+
+    --clear-bg:         rgba(245, 235, 220, 0.48);
+    --clear-border:     rgba(110, 82, 62, 0.08);
+
+    --text-primary:   hsl(25, 28%, 16%);
+    --text-secondary: hsl(25, 16%, 40%);
+    --text-muted:     hsl(25, 10%, 56%);
+
+    --bubble-user-bg:  rgba(200, 168, 130, 0.14);
+    --bubble-model-bg: rgba(40, 28, 18, 0.04);
+
+    --mesh-1: hsl(30, 38%, 78%);
+    --mesh-2: hsl(25, 30%, 72%);
+    --mesh-3: hsl(33, 42%, 80%);
+    --mesh-4: hsl(20, 28%, 74%);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   BASE
+───────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    line-height: var(--leading-normal);
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* Focus visible — styled to glass system, not browser default */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Remove default focus for mouse users */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  h1 { font-size: var(--text-2xl); font-weight: 400; line-height: var(--leading-tight); font-family: var(--font-serif); letter-spacing: -0.01em; }
+  h2 { font-size: var(--text-xl);  font-weight: 400; line-height: var(--leading-tight); font-family: var(--font-serif); }
+  h3 { font-size: var(--text-lg);  font-weight: 600; line-height: var(--leading-tight); }
+
+  p  { line-height: var(--leading-relaxed); }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* Scrollbar — glass-themed */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: var(--radius-full);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--glass-border-bright);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   GLASS — Material Classes
+───────────────────────────────────────────────────────── */
+@layer glass {
+
+  /* Regular glass — primary surfaces (cards, nav, modals) */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: var(--blur-glass);
+    -webkit-backdrop-filter: var(--blur-glass);
+    border: 1px solid var(--glass-border);
+    /* Top inner highlight to simulate light hitting the glass edge */
+    box-shadow:
+      var(--glass-shadow),
+      inset 0 1px 0 var(--glass-highlight);
+    border-radius: var(--radius-lg);
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* Clear glass — secondary chrome (tooltips, FAB, pills) */
+  .glass-clear {
+    background: var(--clear-bg);
+    backdrop-filter: var(--blur-clear);
+    -webkit-backdrop-filter: var(--blur-clear);
+    border: 1px solid var(--clear-border);
+    box-shadow: var(--glass-shadow-sm), inset 0 1px 0 var(--glass-highlight);
+    border-radius: var(--radius-lg);
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* Specular cursor sheen — applied via JS updating --sheen-x/y */
+  .glass-sheen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      circle 120px at var(--sheen-x, 50%) var(--sheen-y, 0%),
+      rgba(255, 255, 255, 0.10),
+      transparent 70%
+    );
+    pointer-events: none;
+    transition: opacity var(--duration-fast) var(--ease-out);
+    opacity: 0;
+  }
+
+  .glass-sheen:hover::after {
+    opacity: 1;
+  }
+
+  /* Pressed state */
+  .glass:active {
+    background: var(--glass-bg-active);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   ANIMATED GRADIENT MESH BACKGROUND
+───────────────────────────────────────────────────────── */
+@layer components {
+
+  .mesh-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--bg-base);
+    overflow: hidden;
+  }
+
+  .mesh-bg::before,
+  .mesh-bg::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+  }
+
+  .mesh-bg::before {
+    width: 70vw;
+    height: 70vw;
+    background: radial-gradient(circle, var(--mesh-1) 0%, transparent 70%);
+    top: -20%;
+    left: -20%;
+    animation: mesh-drift-a 18s ease-in-out infinite alternate;
+  }
+
+  .mesh-bg::after {
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, var(--mesh-2) 0%, transparent 70%);
+    bottom: -20%;
+    right: -10%;
+    animation: mesh-drift-b 22s ease-in-out infinite alternate;
+  }
+
+  .mesh-orb-3 {
+    position: absolute;
+    width: 50vw;
+    height: 50vw;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--mesh-3) 0%, transparent 70%);
+    filter: blur(80px);
+    opacity: 0.35;
+    bottom: 10%;
+    left: 20%;
+    animation: mesh-drift-c 25s ease-in-out infinite alternate;
+  }
+
+  .mesh-orb-4 {
+    position: absolute;
+    width: 40vw;
+    height: 40vw;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--mesh-4) 0%, transparent 70%);
+    filter: blur(60px);
+    opacity: 0.3;
+    top: 30%;
+    right: 15%;
+    animation: mesh-drift-d 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes mesh-drift-a {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(8%, 12%) scale(1.12); }
+  }
+  @keyframes mesh-drift-b {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(-10%, -8%) scale(1.08); }
+  }
+  @keyframes mesh-drift-c {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(12%, -10%) scale(1.15); }
+  }
+  @keyframes mesh-drift-d {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(-8%, 14%) scale(1.1); }
+  }
+
+  /* Freeze animations for users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .mesh-bg::before,
+    .mesh-bg::after,
+    .mesh-orb-3,
+    .mesh-orb-4 {
+      animation: none;
+    }
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   UTILITIES
+───────────────────────────────────────────────────────── */
+@layer utilities {
+
+  /* Text color utilities */
+  .text-primary   { color: var(--text-primary); }
+  .text-secondary { color: var(--text-secondary); }
+  .text-muted     { color: var(--text-muted); }
+  .text-accent    { color: var(--accent); }
+
+  /* Truncation */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Streaming caret animation */
+  @keyframes caret-blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+
+  .caret-blink {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    background: var(--accent);
+    border-radius: 1px;
+    vertical-align: text-bottom;
+    margin-left: 2px;
+    animation: caret-blink 1s ease-in-out infinite;
+  }
+
+  /* Shimmer animation for skeleton loaders */
+  @keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--glass-bg) 0%,
+      var(--glass-bg-hover) 50%,
+      var(--glass-bg) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shimmer { animation: none; background: var(--glass-bg); }
+    .caret-blink { animation: none; opacity: 1; }
+  }
+
+  /* Scrollable area */
+  .scroll-area {
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+
+  /* Full height minus nav */
+  .h-content {
+    height: calc(100dvh - 64px);
+  }
+
+  /* Responsive container */
+  .container-app {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .container-app { padding-inline: var(--space-8); }
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   ARIA LIVE REGION (screen readers)
+───────────────────────────────────────────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.tiptap-editor .ProseMirror {
+  outline: none;
+  min-height: 100%;
+}
+
+.tiptap-editor .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--text-muted);
+  pointer-events: none;
+  height: 0;
+}
+

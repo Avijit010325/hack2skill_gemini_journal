@@ -1,0 +1,35 @@
+{
+  "name": "gemini-journal-functions",
+  "version": "1.0.0",
+  "description": "Cloud Functions v2 backend for Personal Gemini Journal",
+  "engines": { "node": "20" },
+  "main": "lib/index.js",
+  "scripts": {
+    "build":   "tsc",
+    "watch":   "tsc --watch",
+    "test":    "jest --testPathPattern=__tests__",
+    "lint":    "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "@google-cloud/secret-manager": "^5.6.0",
+    "@google/generative-ai": "^0.21.0",
+    "firebase-admin": "^13.0.0",
+    "firebase-functions": "^6.3.2",
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.0",
+    "jest": "^29.7.0",
+    "@jest/globals": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.7.2"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
+  }
+}

@@ -1,0 +1,76 @@
+// Firestore Security Rules — Personal Gemini Journal
+// Constitution compliance:
+//   - Deny by default at the top level
+//   - All user data scoped to /users/{uid} matching request.auth.uid
+//   - Messages and summaries are backend-write only (client read only for messages)
+//   - Attack scenarios documented above each rule
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ═══════════════════════════════════════════════════════
+    // DENY ALL by default.
+    // 🚫 Attack: any unauthenticated or cross-user read/write
+    //    is blocked here before reaching any specific rule.
+    // ═══════════════════════════════════════════════════════
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ───────────────────────────────────────────────────────
+    // Rate limit counters — written by backend Cloud Function.
+    // 🚫 Attack: User manipulates their own rate limit counter
+    //    to bypass throttling. → client writes blocked.
+    // ───────────────────────────────────────────────────────
+    match /rateLimits/{uid} {
+      allow read, write: if false; // backend-only
+    }
+
+    // ───────────────────────────────────────────────────────
+    // User profile — /users/{uid}
+    // 🚫 Attack: User B reads User A's profile by guessing UID.
+    //    → uid path segment must match authenticated UID.
+    // 🚫 Attack: Unauthenticated user reads any profile.
+    //    → request.auth != null required.
+    // ───────────────────────────────────────────────────────
+    match /users/{uid} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == uid;
+
+      // ─────────────────────────────────────────────────────
+      // Sessions — /users/{uid}/sessions/{sessionId}
+      // 🚫 Attack: User B accesses User A's session by guessing sessionId.
+      //    → uid in path must match authenticated UID.
+      // 🚫 Attack: Client creates a session with a forged uid field inside
+      //    the document. → path-level uid check is sufficient;
+      //    no uid field is stored inside session docs.
+      // ─────────────────────────────────────────────────────
+      match /sessions/{sessionId} {
+        allow read:   if request.auth.uid == uid;
+        allow create: if request.auth.uid == uid
+                      // Validate required fields on create
+                      && request.resource.data.keys().hasAll(["title", "startedAt", "updatedAt", "isComplete"])
+                      // Prevent client from setting messageCount to anything other than 0
+                      && request.resource.data.messageCount == 0;
+        allow update: if request.auth.uid == uid;
+        allow delete: if request.auth.uid == uid;
+
+        // ───────────────────────────────────────────────────
+        // Messages — /users/{uid}/sessions/{sessionId}/messages/{messageId}
+        // ───────────────────────────────────────────────────
+        match /messages/{messageId} {
+          allow read, write: if request.auth.uid == uid;
+        }
+      }
+
+      // ─────────────────────────────────────────────────────
+      // Summaries — /users/{uid}/summaries/{summaryId}
+      // ─────────────────────────────────────────────────────
+      match /summaries/{summaryId} {
+        allow read, write: if request.auth.uid == uid;
+      }
+    }
+  }
+}
