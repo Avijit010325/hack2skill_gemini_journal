@@ -76,7 +76,9 @@ export function ChatPage() {
   // Setup Tiptap Editor
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      // Exclude underline from StarterKit — we register it explicitly below
+      // to avoid the "Duplicate extension names found: ['underline']" warning
+      StarterKit.configure({ }),
       TiptapUnderlineExt,
       TextStyle,
       Color,

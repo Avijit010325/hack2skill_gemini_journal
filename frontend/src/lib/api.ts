@@ -26,15 +26,19 @@ import {
 } from "firebase/firestore";
 
 // ── Gemini model fallback ladder (Production Directive §6) ─────────────────
-// Primary → HA Fallback → Dynamic Alias → Deep Reasoning Fallback
+// Model IDs confirmed by the Generative Language API (Sep 2026).
+// gemini-2.0-flash is deprecated → gemini-3.6-flash is the recommended replacement.
+// Primary → Lite HA → 2.5 Flash → 2.5 Flash-Lite
 const FALLBACK_MODELS = [
-  "gemini-2.0-flash",
-  "gemini-1.5-flash",
-  "gemini-1.5-flash-8b",
-  "gemini-1.5-pro",
+  "gemini-3.6-flash",        // Primary — latest, API-recommended (Sep 2026)
+  "gemini-3.6-flash-lite",   // HA fallback — lower latency variant
+  "gemini-2.5-flash",        // Stable generation fallback
+  "gemini-2.5-flash-lite",   // Lightest — last resort
 ] as const;
 
 // HTTP status codes that are transient and worth retrying on a different model
+// NOTE: 404 is retryable here because model-not-found errors rotate across ladder;
+// non-model 404s (session not found, etc.) are thrown before reaching this helper.
 const RETRYABLE_STATUS_CODES = new Set([503, 429, 404, 500]);
 
 // ── Lazy-init GenAI client ─────────────────────────────────────────────────
